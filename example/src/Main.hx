@@ -1,6 +1,6 @@
 ﻿package ;
 
-import com.soybeansoft.redis.Redis;
+import redis.Redis;
 import neko.Lib;
 
 /**

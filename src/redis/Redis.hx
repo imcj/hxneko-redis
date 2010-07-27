@@ -26,7 +26,7 @@
  * @author Guntur Sarwohadi
  */
 
-package com.soybeansoft.redis;
+package redis;
 
 import haxe.Int32;
 import neko.net.Host;
