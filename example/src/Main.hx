@@ -14,7 +14,7 @@ class Main
 	static function main() 
 	{
 		var redis:Redis = new Redis();
-		trace("info: " + redis.info());
+		//trace("info: " + redis.info());
 		
 		var hasIndex:Bool = redis.exists("index");
 		trace("does 'index' exists? " + hasIndex);
@@ -104,10 +104,10 @@ class Main
 		trace("true heroes: " + redis.setsDifference(["heroes", "enemies"]));
 		trace("true enemies: " + redis.setsDifference(["enemies", "heroes"]));
 		
-		trace("removing 'index': " + redis.delete("index"));
-		trace("removing 'animal': " + redis.delete("animal"));
-		trace("removing 'heroes': " + redis.delete("heroes"));
-		trace("removing 'enemies': " + redis.delete("enemies"));
+		trace("removing 'index': " + redis.delete(["index"]));
+		trace("removing 'animal': " + redis.delete(["animal"]));
+		trace("removing 'heroes': " + redis.delete(["heroes"]));
+		trace("removing 'enemies': " + redis.delete(["enemies"]));
 	}
 	
 }

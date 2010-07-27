@@ -1,0 +1,3 @@
+-neko test.n
+-main redis.TestSuite
+-cmd neko test.n

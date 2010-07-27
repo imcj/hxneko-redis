@@ -1,0 +1,31 @@
+hxneko-redis
+------------
+
+This is a client library for accessing a Redis key value store from
+haXe.
+
+More info on redis can be found here: http://code.google.com/p/redis/
+More info on haxe can be found here: http://haxe.org/
+
+hxneko-redis was written by Guntur Sarwohadi and modified by Ian
+Martins.  It works with Redis version 1.3.
+
+
+Usage
+-----
+
+1. Instantiate an object (it connects immediately)
+2. Execute Redis commands by making method calls on that object.
+
+---
+import redis.Redis;
+
+static function main()
+{
+	var db = new Redis("localhost");
+	db.set("key1", "value1");
+	db.set("key2", "value2");
+	trace(db.get("key2"));  // outputs: "value2"
+	trace(db.get("key1"));  // outputs: "value1"
+}
+---
