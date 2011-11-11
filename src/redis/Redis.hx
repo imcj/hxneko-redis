@@ -984,10 +984,10 @@ class Redis
 	 * @param	?count max number of elements to return
 	 * @return	elements from set in specified score range
 	 */
-	public function sortedSetsRangeByScore(key :String, min :Float, max :Float, ?offset :Int = 0, ?count :Int = 0) :Array<String>
+	public function sortedSetsRangeByScore(key :String, minScore :Float, maxScore :Float, ?offset :Int = 0, ?count :Int = 0) :Array<String>
 	{
 		var limitStr = (count > 0)? "LIMIT " + Std.string(offset) + " " + Std.string(count) : "";
-		protocol.sendInlineCommand("ZRANGEBYSCORE", [key, Std.string(min), Std.string(max), limitStr]);
+		protocol.sendInlineCommand("ZRANGEBYSCORE", [key, Std.string(minScore), Std.string(maxScore), limitStr]);
 		return protocol.receiveMultiBulk();
 	}
 	
@@ -1010,10 +1010,10 @@ class Redis
 	 * @param	member the member of the set
 	 * @return	the member's score
 	 */
-	public function sortedSetsScore(key :String, member :String) :Int
+	public function sortedSetsScore(key :String, member :String) :Float
 	{
 		protocol.sendBulkCommand("ZSCORE", [key, member]);
-		return Std.parseInt(protocol.receiveBulk());
+		return Std.parseFloat(protocol.receiveBulk());
 	}
 
 	/**
@@ -1041,9 +1041,9 @@ class Redis
 	 * @param	max the max score
 	 * @return	the number of elements removed
 	 */
-	public function sortedSetsRemoveRangeByScore(key :String, min :Float, max :Float) :Int
+	public function sortedSetsRemoveRangeByScore(key :String, minScore :Float, maxScore :Float) :Int
 	{
-		protocol.sendInlineCommand("ZREMRANGEBYSCORE", [key, Std.string(min), Std.string(max)]);
+		protocol.sendInlineCommand("ZREMRANGEBYSCORE", [key, Std.string(minScore), Std.string(maxScore)]);
 		return protocol.receiveInt();
 	}
 	
