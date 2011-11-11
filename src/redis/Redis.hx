@@ -984,7 +984,7 @@ class Redis
 	 * @param	?count max number of elements to return
 	 * @return	elements from set in specified score range
 	 */
-	public function sortedSetsRangeByScore(key :String, min :Int, max :Int, ?offset :Int = 0, ?count :Int = 0) :Array<String>
+	public function sortedSetsRangeByScore(key :String, min :Float, max :Float, ?offset :Int = 0, ?count :Int = 0) :Array<String>
 	{
 		var limitStr = (count > 0)? "LIMIT " + Std.string(offset) + " " + Std.string(count) : "";
 		protocol.sendInlineCommand("ZRANGEBYSCORE", [key, Std.string(min), Std.string(max), limitStr]);

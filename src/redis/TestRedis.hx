@@ -484,10 +484,10 @@ class TestRedis extends haxe.unit.TestCase
 
   public function testSortedSetsRangeByScore()
   {
-    assertTrue(db.sortedSetsAdd("key1", 2, "val2"));
-    assertTrue(db.sortedSetsAdd("key1", 1, "val1"));
-    assertTrue(db.sortedSetsAdd("key1", 3, "val3"));
-    assertEquals("[val2, val3]", Std.string(db.sortedSetsRangeByScore("key1", 2, 3)));
+    assertTrue(db.sortedSetsAdd("key1", 2.1, "val2"));
+    assertTrue(db.sortedSetsAdd("key1", 1.2, "val1"));
+    assertTrue(db.sortedSetsAdd("key1", 3.3, "val3"));
+    assertEquals("[val2, val3]", Std.string(db.sortedSetsRangeByScore("key1", 2, 4)));
   }
 
   public function testSortedSetsScore()

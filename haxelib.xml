@@ -2,5 +2,5 @@
     <tag v="neko" />
     <user name="ianxm"/>
     <description>client library for accessing a redis key value store</description>
-    <version name="2.0">initial haxelib release</version>
+    <version name="2.1">bugfix: sorted sets scores are floats</version>
 </project>
