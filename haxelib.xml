@@ -2,5 +2,5 @@
     <tag v="neko" />
     <user name="ianxm"/>
     <description>client library for accessing a redis key value store</description>
-    <version name="2.1">bugfix: sorted sets scores are floats</version>
+    <version name="2.2">update to redis server version 2.2</version>
 </project>

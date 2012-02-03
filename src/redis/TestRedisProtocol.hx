@@ -34,54 +34,6 @@ import haxe.io.Bytes;
 
 class TestRedisProtocol extends haxe.unit.TestCase
 {
-  public function testSendInline1()
-  {
-    var output = new BytesOutput();
-    var proto = new RedisProtocol(null, output);
-    proto.sendInlineCommand("PING");
-    assertEquals("PING\r\n", output.getBytes().toString());
-  }
-
-  public function testSendInline2()
-  {
-    var output = new BytesOutput();
-    var proto = new RedisProtocol(null, output);
-    proto.sendInlineCommand("EXISTS", ["foo"]);
-    assertEquals("EXISTS foo\r\n", output.getBytes().toString());
-  }
-
-  public function testSendInline3()
-  {
-    var output = new BytesOutput();
-    var proto = new RedisProtocol(null, output);
-    proto.sendInlineCommand("DEL", ["foo"]);
-    assertEquals("DEL foo\r\n", output.getBytes().toString());
-  }
-
-  public function testSendInline4()
-  {
-    var output = new BytesOutput();
-    var proto = new RedisProtocol(null, output);
-    proto.sendInlineCommand("RENAME", ["foo1", "foo2"]);
-    assertEquals("RENAME foo1 foo2\r\n", output.getBytes().toString());
-  }
-
-  public function testSendBulk1()
-  {
-    var output = new BytesOutput();
-    var proto = new RedisProtocol(null, output);
-    proto.sendBulkCommand("SET", ["key", "val"]);
-    assertEquals("SET key 3\r\nval\r\n", output.getBytes().toString());
-  }
-
-  public function testSendBulk2()
-  {
-    var output = new BytesOutput();
-    var proto = new RedisProtocol(null, output);
-    proto.sendBulkCommand("RPUSH", ["key", "somevalue1"]);
-    assertEquals("RPUSH key 10\r\nsomevalue1\r\n", output.getBytes().toString());
-  }
-
   public function testSendMultiBulk1()
   {
     var output = new BytesOutput();

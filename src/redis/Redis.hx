@@ -80,7 +80,7 @@ class Redis
 	  */
 	public function ping() :Bool
 	{
-		protocol.sendInlineCommand("PING");
+		protocol.sendMultiBulkCommand("PING", []);
 		return protocol.receiveSingleLine() == PONG;
 	}
 	
@@ -91,7 +91,7 @@ class Redis
 	  */
 	public function exists(key :String) :Bool
 	{
-		protocol.sendInlineCommand("EXISTS", [key]);
+		protocol.sendMultiBulkCommand("EXISTS", [key]);
 		return protocol.receiveInt() == 1;
 	}
 	
@@ -102,7 +102,7 @@ class Redis
 	 */
 	public function delete(keys :Array<String>) :Int
 	{
-		protocol.sendInlineCommand("DEL", keys);
+		protocol.sendMultiBulkCommand("DEL", keys);
 		return protocol.receiveInt();
 	}
 	
@@ -114,7 +114,7 @@ class Redis
 	 */
 	public function type(key :String) :String
 	{
-		protocol.sendInlineCommand("TYPE", [key]);
+		protocol.sendMultiBulkCommand("TYPE", [key]);
 		return protocol.receiveSingleLine();
 	}
 	
@@ -132,7 +132,7 @@ class Redis
 	 */
 	public function keys(pattern :String) :Array<String>
 	{
-		protocol.sendInlineCommand("KEYS", [pattern]);
+		protocol.sendMultiBulkCommand("KEYS", [pattern]);
 		return protocol.receiveMultiBulk();
 	}
 	
@@ -142,7 +142,7 @@ class Redis
 	 */
 	public function randomKey() :String
 	{
-		protocol.sendInlineCommand("RANDOMKEY");
+		protocol.sendMultiBulkCommand("RANDOMKEY", []);
 		return protocol.receiveBulk();
 	}
 	
@@ -158,7 +158,7 @@ class Redis
 		if (oldKey == newKey)
 			throw new RedisError("-ERR Key names must not match");
 		
-		protocol.sendInlineCommand("RENAME", [oldKey, newKey]);
+		protocol.sendMultiBulkCommand("RENAME", [oldKey, newKey]);
 		return protocol.receiveSingleLine() == OK;
 	}
 	
@@ -173,7 +173,7 @@ class Redis
 		if (oldKey == newKey)
 			throw new RedisError("-ERR Key names must not match");
 		
-		protocol.sendInlineCommand("RENAMENX", [oldKey, newKey]);
+		protocol.sendMultiBulkCommand("RENAMENX", [oldKey, newKey]);
 		return protocol.receiveInt() > 0;
 	}
 	
@@ -183,7 +183,7 @@ class Redis
 	 */
 	public function dbSize() :Int
 	{
-		protocol.sendInlineCommand("DBSIZE");
+		protocol.sendMultiBulkCommand("DBSIZE", []);
 		return protocol.receiveInt();
 	}
 	
@@ -196,7 +196,7 @@ class Redis
 	 */
 	public function expire(key :String, seconds :Int) :Bool
 	{
-		protocol.sendInlineCommand("EXPIRE", [key, Std.string(seconds)]);
+		protocol.sendMultiBulkCommand("EXPIRE", [key, Std.string(seconds)]);
 		return protocol.receiveInt() == 1;
 	}
 	
@@ -210,7 +210,7 @@ class Redis
 	 */
 	public function expireAt(key :String, unixTime :Int) :Bool
 	{
-		protocol.sendInlineCommand("EXPIREAT", [key, Std.string(unixTime)]);
+		protocol.sendMultiBulkCommand("EXPIREAT", [key, Std.string(unixTime)]);
 		return protocol.receiveInt() == 1;
 	}
 	
@@ -222,7 +222,7 @@ class Redis
 	 */
 	public function ttl(key :String) :Int
 	{
-		protocol.sendInlineCommand("TTL", [key]);
+		protocol.sendMultiBulkCommand("TTL", [key]);
 		return protocol.receiveInt();
 	}
 	
@@ -234,7 +234,7 @@ class Redis
 	 */
 	public function select(index :Int) :Bool
 	{
-		protocol.sendInlineCommand("SELECT", [Std.string(index)]);
+		protocol.sendMultiBulkCommand("SELECT", [Std.string(index)]);
 		return protocol.receiveSingleLine() == OK;
 	}
 	
@@ -246,7 +246,7 @@ class Redis
 	 */
 	public function move(key :String, dbIndex :Int) :Bool
 	{
-		protocol.sendInlineCommand("MOVE", [key, Std.string(dbIndex)]);
+		protocol.sendMultiBulkCommand("MOVE", [key, Std.string(dbIndex)]);
 		return protocol.receiveInt() == 1;
 	}
 	
@@ -256,7 +256,7 @@ class Redis
 	 */
 	public function flushDB() :Bool
 	{
-		protocol.sendInlineCommand("FLUSHDB");
+		protocol.sendMultiBulkCommand("FLUSHDB", []);
 		return protocol.receiveSingleLine() == OK;
 	}
 	
@@ -267,7 +267,7 @@ class Redis
 	 */
 	public function flushAll() :Bool
 	{
-		protocol.sendInlineCommand("FLUSHALL");
+		protocol.sendMultiBulkCommand("FLUSHALL", []);
 		return protocol.receiveSingleLine() == OK;
 	}
 	
@@ -279,7 +279,7 @@ class Redis
 	 */
 	public function set(key :String, value :String) :Bool
 	{
-		protocol.sendBulkCommand("SET", [key, value]);
+		protocol.sendMultiBulkCommand("SET", [key, value]);
 		return protocol.receiveSingleLine() == OK;
 	}
 	
@@ -291,7 +291,7 @@ class Redis
 	 */
 	public function get(key :String) :String
 	{
-		protocol.sendInlineCommand("GET", [key]);
+		protocol.sendMultiBulkCommand("GET", [key]);
 		return protocol.receiveBulk();
 	}
 	
@@ -304,7 +304,7 @@ class Redis
 	 */
 	public function getSet(key :String, value :String) :String
 	{
-		protocol.sendBulkCommand("GETSET", [key, value]);
+		protocol.sendMultiBulkCommand("GETSET", [key, value]);
 		return protocol.receiveBulk();
 	}
 	
@@ -330,7 +330,7 @@ class Redis
 	 */
 	public function setSafely(key :String, value :String) :Bool
 	{
-		protocol.sendBulkCommand("SETNX", [key, value]);
+		protocol.sendMultiBulkCommand("SETNX", [key, value]);
 		return protocol.receiveInt() > 0;
 	}
 	
@@ -344,7 +344,7 @@ class Redis
 	 */
 	public function setExpire(key :String, value :String, seconds :Int)
 	{
-		protocol.sendBulkCommand("SETEX", [key, Std.string(seconds), value]);
+		protocol.sendMultiBulkCommand("SETEX", [key, Std.string(seconds), value]);
 		return protocol.receiveSingleLine() == OK;
 	}
 
@@ -394,7 +394,7 @@ class Redis
 	 */
 	public function increment(key :String) :Int
 	{
-		protocol.sendInlineCommand("INCR", [key]);
+		protocol.sendMultiBulkCommand("INCR", [key]);
 		return protocol.receiveInt();
 	}
 	
@@ -408,7 +408,7 @@ class Redis
 	 */
 	public function incrementBy(key :String, value :Int) :Int
 	{
-		protocol.sendInlineCommand("INCRBY", [key, Std.string(value)]);
+		protocol.sendMultiBulkCommand("INCRBY", [key, Std.string(value)]);
 		return protocol.receiveInt();
 	}
 	
@@ -421,7 +421,7 @@ class Redis
 	 */
 	public function decrement(key :String) :Int
 	{
-		protocol.sendInlineCommand("DECR", [key]);
+		protocol.sendMultiBulkCommand("DECR", [key]);
 		return protocol.receiveInt();
 	}
 	
@@ -435,7 +435,7 @@ class Redis
 	 */
 	public function decrementBy(key :String, value :Int) :Int
 	{
-		protocol.sendInlineCommand("DECRBY", [key, Std.string(value)]);
+		protocol.sendMultiBulkCommand("DECRBY", [key, Std.string(value)]);
 		return protocol.receiveInt();
 	}
 	
@@ -449,7 +449,7 @@ class Redis
 	 */
 	public function append(key :String, value :String) :Bool
 	{
-		protocol.sendBulkCommand("APPEND", [key, value]);
+		protocol.sendMultiBulkCommand("APPEND", [key, value]);
 		return protocol.receiveInt() > 0;
 	}
 	
@@ -465,7 +465,7 @@ class Redis
 	 */
 	public function substr(key :String, start :Int, end :Int) :String
 	{
-		protocol.sendInlineCommand("SUBSTR", [key, Std.string(start), Std.string(end)]);
+		protocol.sendMultiBulkCommand("SUBSTR", [key, Std.string(start), Std.string(end)]);
 		return protocol.receiveBulk();
 	}
 	
@@ -479,7 +479,7 @@ class Redis
 	 */
 	public function listsRightPush(key :String, value :String) :Int
 	{
-		protocol.sendBulkCommand("RPUSH", [key, Std.string(value)]);
+		protocol.sendMultiBulkCommand("RPUSH", [key, Std.string(value)]);
 		return protocol.receiveInt();
 	}
 	
@@ -493,7 +493,7 @@ class Redis
 	 */
 	public function listsLeftPush(key :String, value :String) :Int
 	{
-		protocol.sendBulkCommand("LPUSH", [key, Std.string(value)]);
+		protocol.sendMultiBulkCommand("LPUSH", [key, Std.string(value)]);
 		return protocol.receiveInt();
 	}
 	
@@ -506,7 +506,7 @@ class Redis
 	 */
 	public function listsLength(key :String) :Int
 	{
-		protocol.sendInlineCommand("LLEN", [key]);
+		protocol.sendMultiBulkCommand("LLEN", [key]);
 		return protocol.receiveInt();
 	}
 	
@@ -525,7 +525,7 @@ class Redis
 	 */
 	public function listsRange(key :String, start :Int, end :Int) :Array<String>
 	{
-		protocol.sendInlineCommand("LRANGE", [key, Std.string(start), Std.string(end)]);
+		protocol.sendMultiBulkCommand("LRANGE", [key, Std.string(start), Std.string(end)]);
 		return protocol.receiveMultiBulk();
 	}
 	
@@ -545,7 +545,7 @@ class Redis
 	 */
 	public function listsTrim(key :String, start :Int, end :Int) :Bool
 	{
-		protocol.sendInlineCommand("LTRIM", [key, Std.string(start), Std.string(end)]);
+		protocol.sendMultiBulkCommand("LTRIM", [key, Std.string(start), Std.string(end)]);
 		return protocol.receiveSingleLine() == OK;
 	}
 	
@@ -560,7 +560,7 @@ class Redis
 	 */
 	public function listsIndex(key :String, index :Int) :String
 	{
-		protocol.sendInlineCommand("LINDEX", [key, Std.string(index)]);
+		protocol.sendMultiBulkCommand("LINDEX", [key, Std.string(index)]);
 		return protocol.receiveBulk();
 	}
 	
@@ -574,7 +574,7 @@ class Redis
 	 */
 	public function listsSet(key :String, index :Int, value :String) :Bool
 	{
-		protocol.sendBulkCommand("LSET", [key, Std.string(index), value]);
+		protocol.sendMultiBulkCommand("LSET", [key, Std.string(index), value]);
 		return protocol.receiveSingleLine() == OK;
 	}
 	
@@ -592,7 +592,7 @@ class Redis
 	 */
 	public function listsRemove(key :String, count :Int, value :String) :Int
 	{
-		protocol.sendBulkCommand("LREM", [key, Std.string(count), value]);
+		protocol.sendMultiBulkCommand("LREM", [key, Std.string(count), value]);
 		return protocol.receiveInt();
 	}
 	
@@ -605,7 +605,7 @@ class Redis
 	 */
 	public function listsLeftPop(key :String) :String
 	{
-		protocol.sendInlineCommand("LPOP", [key]);
+		protocol.sendMultiBulkCommand("LPOP", [key]);
 		return protocol.receiveBulk();
 	}
 	
@@ -618,7 +618,7 @@ class Redis
 	 */
 	public function listsRightPop(key :String) :String
 	{
-		protocol.sendInlineCommand("RPOP", [key]);
+		protocol.sendMultiBulkCommand("RPOP", [key]);
 		return protocol.receiveBulk();
 	}
 	
@@ -631,7 +631,7 @@ class Redis
 	 */
 	public function listsBlockingLeftPop(key :String, seconds :Int) :String
 	{
-		protocol.sendInlineCommand("BLPOP", [key, Std.string(seconds)]);
+		protocol.sendMultiBulkCommand("BLPOP", [key, Std.string(seconds)]);
 		return protocol.receiveBulk();
 	}
 	
@@ -644,7 +644,7 @@ class Redis
 	 */
 	public function listsBlockingRightPop(key :String, seconds :Int) :String
 	{
-		protocol.sendInlineCommand("BRPOP", [key, Std.string(seconds)]);
+		protocol.sendMultiBulkCommand("BRPOP", [key, Std.string(seconds)]);
 		return protocol.receiveBulk();
 	}
 	
@@ -660,7 +660,7 @@ class Redis
 	 */
 	public function listsRightPopLeftPush(srcList :String, dstList :String) :String
 	{
-		protocol.sendInlineCommand("RPOPLPUSH", [srcList, dstList]);
+		protocol.sendMultiBulkCommand("RPOPLPUSH", [srcList, dstList]);
 		return protocol.receiveBulk();
 	}
 	
@@ -674,7 +674,7 @@ class Redis
 	 */
 	public function setsAdd(key :String, member :String) :Bool
 	{
-		protocol.sendBulkCommand("SADD", [key, member]);
+		protocol.sendMultiBulkCommand("SADD", [key, member]);
 		return protocol.receiveInt() > 0;
 	}
 	
@@ -687,7 +687,7 @@ class Redis
 	 */
 	public function setsRemove(key :String, member :String) :Bool
 	{
-		protocol.sendBulkCommand("SREM", [key, member]);
+		protocol.sendMultiBulkCommand("SREM", [key, member]);
 		return protocol.receiveInt() > 0;
 	}
 	
@@ -699,7 +699,7 @@ class Redis
 	 */
 	public function setsPop(key :String) :String
 	{
-		protocol.sendInlineCommand("SPOP", [key]);
+		protocol.sendMultiBulkCommand("SPOP", [key]);
 		return protocol.receiveBulk();
 	}
 	
@@ -712,7 +712,7 @@ class Redis
 	 */
 	public function setsMove(srcKey :String, dstKey :String, member :String) :Bool
 	{
-		protocol.sendBulkCommand("SMOVE", [srcKey, dstKey, member]);
+		protocol.sendMultiBulkCommand("SMOVE", [srcKey, dstKey, member]);
 		return protocol.receiveInt() > 0;
 	}
 	
@@ -724,7 +724,7 @@ class Redis
 	 */
 	public function setsCount(key :String) :Int
 	{
-		protocol.sendInlineCommand("SCARD", [key]);
+		protocol.sendMultiBulkCommand("SCARD", [key]);
 		return protocol.receiveInt();
 	}
 	
@@ -736,7 +736,7 @@ class Redis
 	 */
 	public function setsHasMember(key :String, member :String) :Bool
 	{
-		protocol.sendBulkCommand("SISMEMBER", [key, member]);
+		protocol.sendMultiBulkCommand("SISMEMBER", [key, member]);
 		return protocol.receiveInt() > 0;
 	}
 	
@@ -764,7 +764,7 @@ class Redis
 	{
 		var params = keys.copy();
 		params.unshift(dstKey);
-		protocol.sendInlineCommand("SINTERSTORE", params);
+		protocol.sendMultiBulkCommand("SINTERSTORE", params);
 		return protocol.receiveInt() > 0;
 	}
 	
@@ -777,7 +777,7 @@ class Redis
 	 */
 	public function setsUnion(keys :Array<String>) :Array<String>
 	{
-		protocol.sendInlineCommand("SUNION", keys);
+		protocol.sendMultiBulkCommand("SUNION", keys);
 		return protocol.receiveMultiBulk();
 	}
 	
@@ -792,7 +792,7 @@ class Redis
 	{
 		var params = keys.copy();
 		params.unshift(dstKey);
-		protocol.sendInlineCommand("SUNIONSTORE", params);
+		protocol.sendMultiBulkCommand("SUNIONSTORE", params);
 		return protocol.receiveInt() > 0;
 	}
 	
@@ -804,7 +804,7 @@ class Redis
 	 */
 	public function setsDifference(keys :Array<String>) :Array<String>
 	{
-		protocol.sendInlineCommand("SDIFF", keys);
+		protocol.sendMultiBulkCommand("SDIFF", keys);
 		return protocol.receiveMultiBulk();
 	}
 	
@@ -819,7 +819,7 @@ class Redis
 	{
 		var params = keys.copy();
 		params.unshift(dstKey);
-		protocol.sendInlineCommand("SDIFFSTORE", params);
+		protocol.sendMultiBulkCommand("SDIFFSTORE", params);
 		return protocol.receiveInt() > 0;
 	}
 	
@@ -830,7 +830,7 @@ class Redis
 	 */
 	public function setsMembers(key :String) :Array<String>
 	{
-		protocol.sendInlineCommand("SMEMBERS", [key]);
+		protocol.sendMultiBulkCommand("SMEMBERS", [key]);
 		return protocol.receiveMultiBulk();
 	}
 	
@@ -842,7 +842,7 @@ class Redis
 	 */
 	public function setsRandomMember(key :String) :String 
 	{
-		protocol.sendInlineCommand("SRANDMEMBER", [key]);
+		protocol.sendMultiBulkCommand("SRANDMEMBER", [key]);
 		return protocol.receiveBulk();
 	}
 	
@@ -858,7 +858,7 @@ class Redis
 	 */
 	public function sortedSetsAdd(key :String, score :Float, member :String) :Bool
 	{
-		protocol.sendBulkCommand("ZADD", [key, Std.string(score), member]);
+		protocol.sendMultiBulkCommand("ZADD", [key, Std.string(score), member]);
 		return protocol.receiveInt() > 0;
 	}
 	
@@ -872,7 +872,7 @@ class Redis
 	 */
 	public function sortedSetsRemove(key :String, member :String) :Bool
 	{
-		protocol.sendBulkCommand("ZREM", [key, member]);
+		protocol.sendMultiBulkCommand("ZREM", [key, member]);
 		return protocol.receiveInt() > 0;
 	}
 	
@@ -890,7 +890,7 @@ class Redis
 	 */
 	public function sortedSetsIncrementBy(key :String, increment :Float, member :String) :Float
 	{
-		protocol.sendBulkCommand("ZINCRBY", [key, Std.string(increment), member]);
+		protocol.sendMultiBulkCommand("ZINCRBY", [key, Std.string(increment), member]);
 		return Std.parseFloat(protocol.receiveBulk());
 	}
 	
@@ -904,7 +904,7 @@ class Redis
 	 */
 	public function sortedSetsRank(key :String, member :String) :Int
 	{
-		protocol.sendBulkCommand("ZRANK", [key, member]);
+		protocol.sendMultiBulkCommand("ZRANK", [key, member]);
 		return protocol.receiveInt();
 	}
 
@@ -919,7 +919,7 @@ class Redis
 	 */
 	public function sortedSetsReverseRank(key :String, member :String) :Int
 	{
-		protocol.sendBulkCommand("ZREVRANK", [key, member]);
+		protocol.sendMultiBulkCommand("ZREVRANK", [key, member]);
 		return protocol.receiveInt();
 	}
 
@@ -942,8 +942,10 @@ class Redis
 	 */
 	public function sortedSetsRange(key :String, start :Int, end :Int, ?withScores :Bool = false) :Array<String>
 	{
-		var withScoresStr = withScores? "WITHSCORES" : "";
-		protocol.sendInlineCommand("ZRANGE", [key, Std.string(start), Std.string(end), withScoresStr]);
+        if( withScores )
+            protocol.sendMultiBulkCommand("ZRANGE", [key, Std.string(start), Std.string(end), "WITHSCORES"]);
+        else
+            protocol.sendMultiBulkCommand("ZRANGE", [key, Std.string(start), Std.string(end)]);
 		return protocol.receiveMultiBulk();
 	}
 
@@ -966,8 +968,10 @@ class Redis
 	 */
 	public function sortedSetsReverseRange(key :String, start :Int, end :Int, ?withScores :Bool = false) :Array<String>
 	{
-		var withScoresStr = withScores? "WITHSCORES" : "";
-		protocol.sendInlineCommand("ZREVRANGE", [key, Std.string(start), Std.string(end), withScoresStr]);
+        if( withScores )
+            protocol.sendMultiBulkCommand("ZREVRANGE", [key, Std.string(start), Std.string(end), "WITHSCORES"]);
+        else
+            protocol.sendMultiBulkCommand("ZREVRANGE", [key, Std.string(start), Std.string(end)]);
 		return protocol.receiveMultiBulk();
 	}
 	
@@ -986,8 +990,10 @@ class Redis
 	 */
 	public function sortedSetsRangeByScore(key :String, minScore :Float, maxScore :Float, ?offset :Int = 0, ?count :Int = 0) :Array<String>
 	{
-		var limitStr = (count > 0)? "LIMIT " + Std.string(offset) + " " + Std.string(count) : "";
-		protocol.sendInlineCommand("ZRANGEBYSCORE", [key, Std.string(minScore), Std.string(maxScore), limitStr]);
+        if( count > 0 )
+            protocol.sendMultiBulkCommand("ZRANGEBYSCORE", [key, Std.string(minScore), Std.string(maxScore), "LIMIT", Std.string(offset), Std.string(count)]);
+        else
+            protocol.sendMultiBulkCommand("ZRANGEBYSCORE", [key, Std.string(minScore), Std.string(maxScore)]);
 		return protocol.receiveMultiBulk();
 	}
 	
@@ -999,7 +1005,7 @@ class Redis
 	 */
 	public function sortedSetsCount(key :String) :Int
 	{
-		protocol.sendInlineCommand("ZCARD", [key]);
+		protocol.sendMultiBulkCommand("ZCARD", [key]);
 		return protocol.receiveInt();
 	}
 	
@@ -1012,7 +1018,7 @@ class Redis
 	 */
 	public function sortedSetsScore(key :String, member :String) :Float
 	{
-		protocol.sendBulkCommand("ZSCORE", [key, member]);
+		protocol.sendMultiBulkCommand("ZSCORE", [key, member]);
 		return Std.parseFloat(protocol.receiveBulk());
 	}
 
@@ -1029,7 +1035,7 @@ class Redis
 	 */
 	public function sortedSetsRemoveRangeByRank(key :String, start :Int, end :Int) :Int
 	{
-		protocol.sendInlineCommand("ZREMRANGEBYRANK", [key, Std.string(start), Std.string(end)]);
+		protocol.sendMultiBulkCommand("ZREMRANGEBYRANK", [key, Std.string(start), Std.string(end)]);
 		return protocol.receiveInt();
 	}
 	
@@ -1043,7 +1049,7 @@ class Redis
 	 */
 	public function sortedSetsRemoveRangeByScore(key :String, minScore :Float, maxScore :Float) :Int
 	{
-		protocol.sendInlineCommand("ZREMRANGEBYSCORE", [key, Std.string(minScore), Std.string(maxScore)]);
+		protocol.sendMultiBulkCommand("ZREMRANGEBYSCORE", [key, Std.string(minScore), Std.string(maxScore)]);
 		return protocol.receiveInt();
 	}
 	
@@ -1070,7 +1076,7 @@ class Redis
 			params.push("AGGREGATE");
 			params.push(aggregate);
 		}
-		protocol.sendInlineCommand("ZUNIONSTORE", params);
+		protocol.sendMultiBulkCommand("ZUNIONSTORE", params);
 		return protocol.receiveInt();
 	}
 
@@ -1098,7 +1104,7 @@ class Redis
 			params.push("AGGREGATE");
 			params.push(aggregate);
 		}
-		protocol.sendInlineCommand("ZINTERSTORE", params);
+		protocol.sendMultiBulkCommand("ZINTERSTORE", params);
 		return protocol.receiveInt();
 	}
 
@@ -1136,7 +1142,7 @@ class Redis
 	 */
 	public function hashGet(key :String, field :String) :String
 	{
-		protocol.sendBulkCommand("HGET", [key, field]);
+		protocol.sendMultiBulkCommand("HGET", [key, field]);
 		return protocol.receiveBulk();
 	}
 
@@ -1182,7 +1188,7 @@ class Redis
 	 */
 	public function hashIncrementBy(key :String, field :String, increment :Int) :Int
 	{
-		protocol.sendInlineCommand("HINCRBY", [key, field, Std.string(increment)]);
+		protocol.sendMultiBulkCommand("HINCRBY", [key, field, Std.string(increment)]);
 		return protocol.receiveInt();
 	}
 
@@ -1194,7 +1200,7 @@ class Redis
 	 */
 	public function hashExists(key :String, field :String) :Bool
 	{
-		protocol.sendBulkCommand("HEXISTS", [key, field]);
+		protocol.sendMultiBulkCommand("HEXISTS", [key, field]);
 		return protocol.receiveInt() > 0;
 	}
 
@@ -1206,7 +1212,7 @@ class Redis
 	 */
 	public function hashDelete(key :String, field :String) :Bool
 	{
-		protocol.sendBulkCommand("HDEL", [key, field]);
+		protocol.sendMultiBulkCommand("HDEL", [key, field]);
 		return protocol.receiveInt() > 0;
 	}
 
@@ -1217,7 +1223,7 @@ class Redis
 	 */
 	public function hashLength(key :String) :Int
 	{
-		protocol.sendInlineCommand("HLEN", [key]);
+		protocol.sendMultiBulkCommand("HLEN", [key]);
 		return protocol.receiveInt();
 	}
 
@@ -1228,7 +1234,7 @@ class Redis
 	 */
 	public function hashKeys(key :String) :Array<String>
 	{
-		protocol.sendInlineCommand("HKEYS", [key]);
+		protocol.sendMultiBulkCommand("HKEYS", [key]);
 		return protocol.receiveMultiBulk();
 	}
 
@@ -1239,7 +1245,7 @@ class Redis
 	 */
 	public function hashValues(key :String) :Array<String>
 	{
-		protocol.sendInlineCommand("HVALS", [key]);
+		protocol.sendMultiBulkCommand("HVALS", [key]);
 		return protocol.receiveMultiBulk();
 	}
 
@@ -1250,7 +1256,7 @@ class Redis
 	 */
 	public function hashGetAll(key :String) :Hash<String>
 	{
-		protocol.sendInlineCommand("HGETALL", [key]);
+		protocol.sendMultiBulkCommand("HGETALL", [key]);
 		var all = protocol.receiveMultiBulk();
 		var ret = new Hash<String>();
 		while( all.length > 0 )
@@ -1275,13 +1281,23 @@ class Redis
 		var params = [key];
 		
 		if (byPattern != null)
-			params.push("BY " + byPattern);
+        {
+			params.push("BY");
+            params.push(byPattern);
+        }
 		
 		if (end > 0)
-			params.push("LIMIT " + Std.string(start) + " " + Std.string(end));
+        {
+			params.push("LIMIT");
+            params.push(Std.string(start));
+            params.push(Std.string(end));
+        }
 		
 		if (getPattern != null)
-			params.push("GET " + getPattern);
+        {
+			params.push("GET");
+            params.push(getPattern);
+        }
 		
 		if (!isAscending)
 			params.push("DESC");
@@ -1290,9 +1306,12 @@ class Redis
 			params.push("ALPHA");
 		
 		if (dstKey != null)
-			params.push("STORE " + dstKey);
+        {
+			params.push("STORE");
+            params.push(dstKey);
+        }
 		
-		protocol.sendInlineCommand("SORT", params);
+		protocol.sendMultiBulkCommand("SORT", params);
 
 		if (dstKey == null)
 		  return protocol.receiveMultiBulk();
@@ -1307,7 +1326,7 @@ class Redis
 	 */
 	public function save() :Bool
 	{
-		protocol.sendInlineCommand("SAVE");
+		protocol.sendMultiBulkCommand("SAVE", []);
 		return protocol.receiveSingleLine() == OK;
 	}
 	
@@ -1319,7 +1338,7 @@ class Redis
 	 */
 	public function backgroundSave() :Bool
 	{
-		protocol.sendInlineCommand("BGSAVE");
+		protocol.sendMultiBulkCommand("BGSAVE", []);
 		return protocol.receiveSingleLine() == OK;
 	}
 	
@@ -1331,7 +1350,7 @@ class Redis
 	 */
 	public function lastSave() :Int
 	{
-		protocol.sendInlineCommand("LASTSAVE");
+		protocol.sendMultiBulkCommand("LASTSAVE", []);
 		return protocol.receiveInt();
 	}
 	
@@ -1343,7 +1362,7 @@ class Redis
 	 */
 	public function shutdown() :Void
 	{
-		protocol.sendInlineCommand("SHUTDOWN");
+		protocol.sendMultiBulkCommand("SHUTDOWN", []);
 	}
 	
 	/**
@@ -1357,7 +1376,7 @@ class Redis
 	 */
 	public function backgroundRewriteAppendOnlyFile() :Bool
 	{
-		protocol.sendInlineCommand("BGREWRITEAOF");
+		protocol.sendMultiBulkCommand("BGREWRITEAOF", []);
 		return protocol.receiveSingleLine() == OK;
 	}
 	
@@ -1368,7 +1387,7 @@ class Redis
 	 */
 	public function info() :Array<String>
 	{
-		protocol.sendInlineCommand("INFO");
+		protocol.sendMultiBulkCommand("INFO", []);
 		return protocol.receiveMultiBulk();
 	}
 	
@@ -1381,16 +1400,16 @@ class Redis
 	 */
 	public function slaveOf(config :SlaveConfig) :Bool
 	{
-		var param :String;
+		var param :Array<String>;
 		switch(config)
 		{
 			case THostPort(host, port):
-				param = " " + host + " " + Std.string(port);
+				param = [host, Std.string(port)];
 			
 			case TNoOne:
-				param = " no one";
+				param = ["no one"];
 		}
-		protocol.sendInlineCommand("SLAVEOF", [param]);
+		protocol.sendMultiBulkCommand("SLAVEOF", param);
 		return protocol.receiveSingleLine() == OK;
 	}
 	
@@ -1399,7 +1418,7 @@ class Redis
 	 */
 	public function quit() :Void
 	{
-		protocol.sendInlineCommand("QUIT");
+		protocol.sendMultiBulkCommand("QUIT", []);
 	}
 	
 	/**
@@ -1416,7 +1435,7 @@ class Redis
 	 */
 	public function auth(password :String) :Bool
 	{
-		protocol.sendInlineCommand("AUTH", [password]);
+		protocol.sendMultiBulkCommand("AUTH", [password]);
 		return protocol.receiveSingleLine() == OK;
 	}
 }

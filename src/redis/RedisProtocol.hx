@@ -43,20 +43,6 @@ class RedisProtocol
     this.output = output;
   }
 
-  public function sendInlineCommand(cmd :String, ?args :Array<String>)
-  {
-    if( args != null && args.length>0 )
-      output.writeString(cmd + " " + args.join(" ") + EOL);
-    else
-      output.writeString(cmd + EOL);
-  }
-
-  public function sendBulkCommand(cmd :String, args :Array<String>)
-  {
-    var last = args.splice(args.length-1, 1)[0];
-    output.writeString(cmd + " " + args.join(" ") + " " + last.length + EOL + last + EOL);
-  }
-
   private function sendBulkArg(arg :String)
   {
     return "$" + arg.length + EOL + arg + EOL;
@@ -79,7 +65,7 @@ class RedisProtocol
       throw new RedisError(line);
 
     return line.substr(1);
-  }
+    }
 
   public function receiveBulk() :String
   { 
