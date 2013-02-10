@@ -1,31 +1,31 @@
 ﻿/**
- Copyright (c) 2010 SoybeanSoft
+   Copyright (c) 2010-2013 SoybeanSoft, Ian Martins
 
- Permission is hereby granted, free of charge, to any person
- obtaining a copy of this software and associated documentation
- files (the "Software"), to deal in the Software without
- restriction, including without limitation the rights to use,
- copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the
- Software is furnished to do so, subject to the following
- conditions:
+   Permission is hereby granted, free of charge, to any person
+   obtaining a copy of this software and associated documentation
+   files (the "Software"), to deal in the Software without
+   restriction, including without limitation the rights to use,
+   copy, modify, merge, publish, distribute, sublicense, and/or sell
+   copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following
+   conditions:
 
- The above copyright notice and this permission notice shall be
- included in all copies or substantial portions of the Software.
+   The above copyright notice and this permission notice shall be
+   included in all copies or substantial portions of the Software.
 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- OTHER DEALINGS IN THE SOFTWARE.
- *
- * haXe/Neko RedisAPI
- * @author Guntur Sarwohadi
- * modified by Ian Martins
- */
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+   OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+   NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+   HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+   OTHER DEALINGS IN THE SOFTWARE.
+   *
+   * haXe/Neko RedisAPI
+   * @author Guntur Sarwohadi
+   * modified by Ian Martins
+   */
 
 package redis;
 
@@ -47,7 +47,7 @@ enum SlaveConfig
  */
 class Redis 
 {
-        private var protocol :RedisProtocol;
+    private var protocol :RedisProtocol;
 	
 	private static inline var EOL :String = "\r\n";
 	private static inline var OK :String = "OK";
@@ -74,21 +74,21 @@ class Redis
 	 * ===================================
 	 */
 	
-	 /**
-	  * Test the connection.
-	  * @return true if redis responds
-	  */
+    /**
+     * Test the connection.
+     * @return true if redis responds
+     */
 	public function ping() :Bool
 	{
 		protocol.sendMultiBulkCommand("PING", []);
 		return protocol.receiveSingleLine() == PONG;
 	}
 	
-	 /**
-	  * Test if the specified key exists.
-	  * @param	key the key to look for
-	  * @return	true if the key exists
-	  */
+    /**
+     * Test if the specified key exists.
+     * @param	key the key to look for
+     * @return	true if the key exists
+     */
 	public function exists(key :String) :Bool
 	{
 		protocol.sendMultiBulkCommand("EXISTS", [key]);
@@ -1260,7 +1260,7 @@ class Redis
 		var all = protocol.receiveMultiBulk();
 		var ret = new Hash<String>();
 		while( all.length > 0 )
-		  ret.set(all.shift(), all.shift());
+            ret.set(all.shift(), all.shift());
 		return ret;
 	}
 
@@ -1314,9 +1314,9 @@ class Redis
 		protocol.sendMultiBulkCommand("SORT", params);
 
 		if (dstKey == null)
-		  return protocol.receiveMultiBulk();
+            return protocol.receiveMultiBulk();
 		else
-		  return protocol.receiveInt();
+            return protocol.receiveInt();
 	}
 	
 	/**
@@ -1403,11 +1403,11 @@ class Redis
 		var param :Array<String>;
 		switch(config)
 		{
-			case THostPort(host, port):
-				param = [host, Std.string(port)];
+        case THostPort(host, port):
+            param = [host, Std.string(port)];
 			
-			case TNoOne:
-				param = ["no one"];
+        case TNoOne:
+            param = ["no one"];
 		}
 		protocol.sendMultiBulkCommand("SLAVEOF", param);
 		return protocol.receiveSingleLine() == OK;
