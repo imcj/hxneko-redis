@@ -140,14 +140,14 @@ class TestRedisProtocol extends haxe.unit.TestCase
   {
     var input = new BytesInput(Bytes.ofString("*4\r\n$3\r\nfoo\r\n$3\r\nbar\r\n$5\r\nHello\r\n$5\r\nWorld\r\n"));
     var proto = new RedisProtocol(input, null);
-    assertEquals("[foo, bar, Hello, World]", Std.string(proto.receiveMultiBulk()));
+    assertEquals("[foo,bar,Hello,World]", Std.string(proto.receiveMultiBulk()));
   }
 
   public function testReceiveMultiBulk2()
   {
     var input = new BytesInput(Bytes.ofString("*4\r\n$3\r\nfoo\r\n$3\r\nbar\r\n$-1\r\n$5\r\nWorld\r\n"));
     var proto = new RedisProtocol(input, null);
-    assertEquals("[foo, bar, null, World]", Std.string(proto.receiveMultiBulk()));
+    assertEquals("[foo,bar,null,World]", Std.string(proto.receiveMultiBulk()));
   }
 
   public function testReceiveMultiBulk3()

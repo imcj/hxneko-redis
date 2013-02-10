@@ -88,7 +88,7 @@ class TestRedis extends haxe.unit.TestCase
     assertTrue(db.set("key1", "val1"));
     assertTrue(db.setsAdd("key2", "val2"));
     assertEquals(1, db.listsLeftPush("list", "val3"));
-    assertEquals("[key2, key1]", Std.string(db.keys("*key*")));
+    assertEquals("[key1,key2]", Std.string(sorted(db.keys("*key*"))));
   }
 
   public function testRandomKey()
@@ -138,7 +138,7 @@ class TestRedis extends haxe.unit.TestCase
     assertTrue(db.set("key1", "val1"));
     assertTrue(db.set("key2", "val2"));
     assertTrue(db.set("key3", "val3"));
-    assertEquals("[val1, val2, val3]", Std.string(db.multiGet(["key1", "key2", "key3"])));
+    assertEquals("[val1,val2,val3]", Std.string(db.multiGet(["key1", "key2", "key3"])));
   }
 
   public function testSetSafely()
@@ -222,7 +222,7 @@ class TestRedis extends haxe.unit.TestCase
     assertEquals(2, db.listsRightPush("key1", "2"));
     assertEquals(3, db.listsRightPush("key1", "3"));
     assertEquals(3, db.listsLength("key1"));
-    assertEquals("[1, 2, 3]", Std.string(db.listsRange("key1", 0, 3)));
+    assertEquals("[1,2,3]", Std.string(db.listsRange("key1", 0, 3)));
   }
 
   public function testListsLeftPushLengthRange()
@@ -231,7 +231,7 @@ class TestRedis extends haxe.unit.TestCase
     assertEquals(2, db.listsLeftPush("key1", "2"));
     assertEquals(3, db.listsLeftPush("key1", "3"));
     assertEquals(3, db.listsLength("key1"));
-    assertEquals("[3, 2, 1]", Std.string(db.listsRange("key1", 0, 3)));
+    assertEquals("[3,2,1]", Std.string(db.listsRange("key1", 0, 3)));
   }
 
   public function testListsTrim()
@@ -241,7 +241,7 @@ class TestRedis extends haxe.unit.TestCase
     assertEquals(3, db.listsRightPush("key1", "3"));
     assertTrue(db.listsTrim("key1", 1, 2));
     assertEquals(2, db.listsLength("key1"));
-    assertEquals("[2, 3]", Std.string(db.listsRange("key1", 0, 1)));
+    assertEquals("[2,3]", Std.string(db.listsRange("key1", 0, 1)));
   }
 
   public function testListsIndex()
@@ -260,7 +260,7 @@ class TestRedis extends haxe.unit.TestCase
     assertEquals(2, db.listsRightPush("key1", "2"));
     assertEquals(3, db.listsRightPush("key1", "3"));
     assertTrue(db.listsSet("key1", 1, "new"));
-    assertEquals("[1, new, 3]", Std.string(db.listsRange("key1", 0, 2)));
+    assertEquals("[1,new,3]", Std.string(db.listsRange("key1", 0, 2)));
   }
 
   public function testListsRemove()
@@ -269,7 +269,7 @@ class TestRedis extends haxe.unit.TestCase
     assertEquals(2, db.listsRightPush("key1", "2"));
     assertEquals(3, db.listsRightPush("key1", "3"));
     assertEquals(1, db.listsRemove("key1", 1, "2"));
-    assertEquals("[1, 3]", Std.string(db.listsRange("key1", 0, 1)));
+    assertEquals("[1,3]", Std.string(db.listsRange("key1", 0, 1)));
   }
 
 
@@ -279,7 +279,7 @@ class TestRedis extends haxe.unit.TestCase
     assertEquals(2, db.listsRightPush("key1", "2"));
     assertEquals(3, db.listsRightPush("key1", "3"));
     assertEquals("1", db.listsLeftPop("key1"));
-    assertEquals("[2, 3]", Std.string(db.listsRange("key1", 0, 1)));
+    assertEquals("[2,3]", Std.string(db.listsRange("key1", 0, 1)));
   }
 
   public function testListsRightPop()
@@ -288,7 +288,7 @@ class TestRedis extends haxe.unit.TestCase
     assertEquals(2, db.listsRightPush("key1", "2"));
     assertEquals(3, db.listsRightPush("key1", "3"));
     assertEquals("3", db.listsRightPop("key1"));
-    assertEquals("[1, 2]", Std.string(db.listsRange("key1", 0, 1)));
+    assertEquals("[1,2]", Std.string(db.listsRange("key1", 0, 1)));
   }
 
   public function testListsRightPopLeftPush()
@@ -300,11 +300,17 @@ class TestRedis extends haxe.unit.TestCase
     assertEquals(2, db.listsRightPush("key2", "b"));
     assertEquals(3, db.listsRightPush("key2", "c"));
     assertEquals("3", db.listsRightPopLeftPush("key1", "key2"));
-    assertEquals("[1, 2]", Std.string(db.listsRange("key1", 0, 1)));
-    assertEquals("[3, a, b, c]", Std.string(db.listsRange("key2", 0, 3)));
+    assertEquals("[1,2]", Std.string(db.listsRange("key1", 0, 1)));
+    assertEquals("[3,a,b,c]", Std.string(db.listsRange("key2", 0, 3)));
   }
 
   // sets
+
+    private function sorted(arr :Array<String>)
+    {
+        arr.sort(function(a,b) return (a<b) ? -1 : (b<a) ? 1 : 0);
+        return arr;
+    }
 
   public function testSetsAddCountMembers()
   {
@@ -312,7 +318,7 @@ class TestRedis extends haxe.unit.TestCase
     assertFalse(db.setsAdd("key1", "val1"));
     assertTrue(db.setsAdd("key1", "val2"));
     assertEquals(2, db.setsCount("key1"));
-    assertEquals("[val1, val2]", Std.string(db.setsMembers("key1")));
+    assertEquals("[val1,val2]", Std.string(sorted(db.setsMembers("key1"))));
   }
 
   public function testSetsRemove()
@@ -323,14 +329,13 @@ class TestRedis extends haxe.unit.TestCase
     assertEquals(3, db.setsCount("key1"));
     assertTrue(db.setsRemove("key1", "val2"));
     assertEquals(2, db.setsCount("key1"));
-    assertEquals("[val1, val3]", Std.string(db.setsMembers("key1")));
+    assertEquals("[val1,val3]", Std.string(sorted(db.setsMembers("key1"))));
   }
 
   public function testSetsPop()
   {
     assertTrue(db.setsAdd("key1", "val1"));
     assertTrue(db.setsAdd("key1", "val2"));
-
     var ret = db.setsPop("key1");
     assertTrue(ret == "val1" || ret == "val2");
     ret = db.setsPop("key1");
@@ -345,8 +350,8 @@ class TestRedis extends haxe.unit.TestCase
     assertTrue(db.setsAdd("key2", "vala"));
     assertTrue(db.setsAdd("key2", "valb"));
     assertTrue(db.setsMove("key1", "key2", "val1"));
-    assertEquals("[val2]", Std.string(db.setsMembers("key1")));
-    assertEquals("[val1, vala, valb]", Std.string(db.setsMembers("key2")));
+    assertEquals("[val2]", Std.string(sorted(db.setsMembers("key1"))));
+    assertEquals("[val1,vala,valb]", Std.string(sorted(db.setsMembers("key2"))));
   }
 
   public function testSetsHasMember()
@@ -364,7 +369,7 @@ class TestRedis extends haxe.unit.TestCase
     assertTrue(db.setsAdd("key1", "val2"));
     assertTrue(db.setsAdd("key2", "val1"));
     assertTrue(db.setsAdd("key2", "val3"));
-    assertEquals("[val1]", Std.string(db.setsIntersect(["key1", "key2"])));
+    assertEquals("[val1]", Std.string(sorted(db.setsIntersect(["key1", "key2"]))));
   }
 
   public function testSetsIntersectStore()
@@ -374,7 +379,7 @@ class TestRedis extends haxe.unit.TestCase
     assertTrue(db.setsAdd("key2", "val1"));
     assertTrue(db.setsAdd("key2", "val3"));
     assertTrue(db.setsIntersectStore("key3", ["key1", "key2"]));
-    assertEquals("[val1]", Std.string(db.setsMembers("key3")));
+    assertEquals("[val1]", Std.string(sorted(db.setsMembers("key3"))));
   }
 
   public function testSetsUnion()
@@ -383,7 +388,7 @@ class TestRedis extends haxe.unit.TestCase
     assertTrue(db.setsAdd("key1", "val2"));
     assertTrue(db.setsAdd("key2", "val1"));
     assertTrue(db.setsAdd("key2", "val3"));
-    assertEquals("[val1, val2, val3]", Std.string(db.setsUnion(["key1", "key2"])));
+    assertEquals("[val1,val2,val3]", Std.string(sorted(db.setsUnion(["key1", "key2"]))));
   }
 
   public function testSetsUnionStore()
@@ -393,7 +398,7 @@ class TestRedis extends haxe.unit.TestCase
     assertTrue(db.setsAdd("key2", "val1"));
     assertTrue(db.setsAdd("key2", "val3"));
     assertTrue(db.setsUnionStore("key3", ["key1", "key2"]));
-    assertEquals("[val1, val2, val3]", Std.string(db.setsMembers("key3")));
+    assertEquals("[val1,val2,val3]", Std.string(sorted(db.setsMembers("key3"))));
   }
 
   public function testSetsDifference()
@@ -402,7 +407,7 @@ class TestRedis extends haxe.unit.TestCase
     assertTrue(db.setsAdd("key1", "val2"));
     assertTrue(db.setsAdd("key2", "val1"));
     assertTrue(db.setsAdd("key2", "val3"));
-    assertEquals("[val2]", Std.string(db.setsDifference(["key1", "key2"])));
+    assertEquals("[val2]", Std.string(sorted(db.setsDifference(["key1", "key2"]))));
   }
 
   public function testSetsDifferenceStore()
@@ -412,7 +417,7 @@ class TestRedis extends haxe.unit.TestCase
     assertTrue(db.setsAdd("key2", "val1"));
     assertTrue(db.setsAdd("key2", "val3"));
     assertTrue(db.setsDifferenceStore("key3", ["key1", "key2"]));
-    assertEquals("[val2]", Std.string(db.setsMembers("key3")));
+    assertEquals("[val2]", Std.string(sorted(db.setsMembers("key3"))));
   }
 
   public function testSetsRandomMember()
@@ -431,7 +436,7 @@ class TestRedis extends haxe.unit.TestCase
     assertTrue(db.sortedSetsAdd("key1", 1, "val1"));
     assertTrue(db.sortedSetsAdd("key1", 3, "val3"));
     assertEquals(3, db.sortedSetsCount("key1"));
-    assertEquals("[val1, val2, val3]", Std.string(db.sortedSetsRange("key1", 0, 2)));
+    assertEquals("[val1,val2,val3]", Std.string(db.sortedSetsRange("key1", 0, 2)));
   }
 
   public function testSortedSetsRemove()
@@ -441,7 +446,7 @@ class TestRedis extends haxe.unit.TestCase
     assertTrue(db.sortedSetsAdd("key1", 3, "val3"));
     assertTrue(db.sortedSetsRemove("key1", "val1"));
     assertEquals(2, db.sortedSetsCount("key1"));
-    assertEquals("[val2, val3]", Std.string(db.sortedSetsRange("key1", 0, 1)));
+    assertEquals("[val2,val3]", Std.string(db.sortedSetsRange("key1", 0, 1)));
   }
 
   public function testSortedSetsIncrementBy()
@@ -450,7 +455,7 @@ class TestRedis extends haxe.unit.TestCase
     assertTrue(db.sortedSetsAdd("key1", 1, "val1"));
     assertTrue(db.sortedSetsAdd("key1", 3, "val3"));
     assertEquals(4.0, db.sortedSetsIncrementBy("key1", 3, "val1"));
-    assertEquals("[val2, val3, val1]", Std.string(db.sortedSetsRange("key1", 0, 2)));
+    assertEquals("[val2,val3,val1]", Std.string(db.sortedSetsRange("key1", 0, 2)));
   }
 
 
@@ -479,7 +484,7 @@ class TestRedis extends haxe.unit.TestCase
     assertTrue(db.sortedSetsAdd("key1", 2, "val2"));
     assertTrue(db.sortedSetsAdd("key1", 1, "val1"));
     assertTrue(db.sortedSetsAdd("key1", 3, "val3"));
-    assertEquals("[val3, val2, val1]", Std.string(db.sortedSetsReverseRange("key1", 0, 2)));
+    assertEquals("[val3,val2,val1]", Std.string(db.sortedSetsReverseRange("key1", 0, 2)));
   }
 
   public function testSortedSetsRangeByScore()
@@ -487,7 +492,7 @@ class TestRedis extends haxe.unit.TestCase
     assertTrue(db.sortedSetsAdd("key1", 2.1, "val2"));
     assertTrue(db.sortedSetsAdd("key1", 1.2, "val1"));
     assertTrue(db.sortedSetsAdd("key1", 3.3, "val3"));
-    assertEquals("[val2, val3]", Std.string(db.sortedSetsRangeByScore("key1", 2, 4)));
+    assertEquals("[val2,val3]", Std.string(db.sortedSetsRangeByScore("key1", 2, 4)));
   }
 
   public function testSortedSetsScore()
@@ -508,7 +513,7 @@ class TestRedis extends haxe.unit.TestCase
     assertTrue(db.sortedSetsAdd("key1", 3.0, "val3"));
     assertTrue(db.sortedSetsAdd("key1", 3.1, "val4"));
     assertEquals(3, db.sortedSetsRemoveRangeByRank("key1", 1, 3));
-    assertEquals("[val1, val5]", Std.string(db.sortedSetsRange("key1", 0, -1)));
+    assertEquals("[val1,val5]", Std.string(db.sortedSetsRange("key1", 0, -1)));
   }
 
   public function testSortedSetsRemoveByScore()
@@ -529,7 +534,7 @@ class TestRedis extends haxe.unit.TestCase
     assertTrue(db.sortedSetsAdd("key2", 4, "val1b"));
     assertTrue(db.sortedSetsAdd("key2", 6, "val3b"));
     assertEquals(6, db.sortedSetsUnionStore("result", ["key1", "key2"]));
-    assertEquals("[val1a, val2a, val3a, val1b, val2b, val3b]", Std.string(db.sortedSetsRange("result", 0, -1)));
+    assertEquals("[val1a,val2a,val3a,val1b,val2b,val3b]", Std.string(db.sortedSetsRange("result", 0, -1)));
   }
 
   public function testSortedSetsUnionStoreAggMax()
@@ -541,7 +546,7 @@ class TestRedis extends haxe.unit.TestCase
     assertTrue(db.sortedSetsAdd("key2", 4, "val1"));
     assertTrue(db.sortedSetsAdd("key2", 6, "val3"));
     assertEquals(3, db.sortedSetsUnionStore("result", ["key1", "key2"], null, "max"));
-    assertEquals("[val1, val2, val3]", Std.string(db.sortedSetsRange("result", 0, -1)));
+    assertEquals("[val1,val2,val3]", Std.string(db.sortedSetsRange("result", 0, -1)));
   }
 
   public function testSortedSetsIntersectStore()
@@ -553,7 +558,7 @@ class TestRedis extends haxe.unit.TestCase
     assertTrue(db.sortedSetsAdd("key2", 4, "val2"));
     assertTrue(db.sortedSetsAdd("key2", 6, "val4"));
     assertEquals(2, db.sortedSetsIntersectStore("result", ["key1", "key2"]));
-    assertEquals("[val2, val3]", Std.string(db.sortedSetsRange("result", 0, -1)));
+    assertEquals("[val2,val3]", Std.string(db.sortedSetsRange("result", 0, -1)));
   }
 
   // hash
@@ -577,7 +582,7 @@ class TestRedis extends haxe.unit.TestCase
     fields.set("field1", "val1");
     fields.set("field2", "val2");
     assertTrue(db.hashMultiSet("key1", fields));
-    assertEquals("[val1, val2]", Std.string(db.hashMultiGet("key1", ["field1", "field2"])));
+    assertEquals("[val1,val2]", Std.string(db.hashMultiGet("key1", ["field1", "field2"])));
   }
 
   public function testHashIncrementBy()
@@ -618,7 +623,7 @@ class TestRedis extends haxe.unit.TestCase
     fields.set("field2", "val2");
     fields.set("field3", "val3");
     assertTrue(db.hashMultiSet("key1", fields));
-    assertEquals("[field2, field1, field3]", Std.string(db.hashKeys("key1")));
+    assertEquals("[field2,field1,field3]", Std.string(db.hashKeys("key1")));
   }
 
   public function testHashValues()
@@ -628,7 +633,7 @@ class TestRedis extends haxe.unit.TestCase
     fields.set("field2", "val2");
     fields.set("field3", "val3");
     assertTrue(db.hashMultiSet("key1", fields));
-    assertEquals("[val2, val1, val3]", Std.string(db.hashValues("key1")));
+    assertEquals("[val2,val1,val3]", Std.string(db.hashValues("key1")));
   }
 
   public function testHashGetAll()
@@ -648,9 +653,9 @@ class TestRedis extends haxe.unit.TestCase
     assertEquals(1, db.listsLeftPush("key1", "val2"));
     assertEquals(2, db.listsLeftPush("key1", "val1"));
     assertEquals(3, db.listsLeftPush("key1", "val3"));
-    assertEquals("[val3, val1, val2]", Std.string(db.listsRange("key1", 0, -1)));
-    assertEquals("[val1, val2, val3]", Std.string(db.sort("key1", null, null, null, null, null, true)));
-    assertEquals("[val3, val2, val1]", Std.string(db.sort("key1", null, null, null, null, false, true)));
+    assertEquals("[val3,val1,val2]", Std.string(db.listsRange("key1", 0, -1)));
+    assertEquals("[val1,val2,val3]", Std.string(db.sort("key1", null, null, null, null, null, true)));
+    assertEquals("[val3,val2,val1]", Std.string(db.sort("key1", null, null, null, null, false, true)));
   }
 
   public function testSortNums()
@@ -658,8 +663,8 @@ class TestRedis extends haxe.unit.TestCase
     assertEquals(1, db.listsLeftPush("key1", "1.23"));
     assertEquals(2, db.listsLeftPush("key1", "1.01"));
     assertEquals(3, db.listsLeftPush("key1", "2.11"));
-    assertEquals("[2.11, 1.01, 1.23]", Std.string(db.listsRange("key1", 0, -1)));
-    assertEquals("[2.11, 1.23, 1.01]", Std.string(db.sort("key1", null, null, null, null, false, false)));
+    assertEquals("[2.11,1.01,1.23]", Std.string(db.listsRange("key1", 0, -1)));
+    assertEquals("[2.11,1.23,1.01]", Std.string(db.sort("key1", null, null, null, null, false, false)));
   }
 
   public function testSortLimit()
@@ -668,8 +673,8 @@ class TestRedis extends haxe.unit.TestCase
     assertEquals(2, db.listsLeftPush("key1", "val1"));
     assertEquals(3, db.listsLeftPush("key1", "val5"));
     assertEquals(4, db.listsLeftPush("key1", "val3"));
-    assertEquals("[val3, val5, val1, val2]", Std.string(db.listsRange("key1", 0, -1)));
-    assertEquals("[val2, val3]", Std.string(db.sort("key1", null, 1, 2, null, null, true)));
+    assertEquals("[val3,val5,val1,val2]", Std.string(db.listsRange("key1", 0, -1)));
+    assertEquals("[val2,val3]", Std.string(db.sort("key1", null, 1, 2, null, null, true)));
   }
 
   public function testSortByExternalKeys()
@@ -680,8 +685,8 @@ class TestRedis extends haxe.unit.TestCase
     assertEquals(1, db.listsLeftPush("key1", "val2"));
     assertEquals(2, db.listsLeftPush("key1", "val1"));
     assertEquals(3, db.listsLeftPush("key1", "val3"));
-    assertEquals("[val3, val1, val2]", Std.string(db.listsRange("key1", 0, -1)));
-    assertEquals("[val1, val2, val3]", Std.string(db.sort("key1", "w_*", null, null, null, null, true)));
+    assertEquals("[val3,val1,val2]", Std.string(db.listsRange("key1", 0, -1)));
+    assertEquals("[val1,val2,val3]", Std.string(db.sort("key1", "w_*", null, null, null, null, true)));
   }
 
   public function testSortStore()
@@ -689,8 +694,8 @@ class TestRedis extends haxe.unit.TestCase
     assertEquals(1, db.listsLeftPush("key1", "val2"));
     assertEquals(2, db.listsLeftPush("key1", "val1"));
     assertEquals(3, db.listsLeftPush("key1", "val3"));
-    assertEquals("[val3, val1, val2]", Std.string(db.listsRange("key1", 0, -1)));
+    assertEquals("[val3,val1,val2]", Std.string(db.listsRange("key1", 0, -1)));
     assertEquals(3, db.sort("key1", null, null, null, null, null, true, "key2"));
-    assertEquals("[val1, val2, val3]", Std.string(db.listsRange("key2", 0, -1)));
+    assertEquals("[val1,val2,val3]", Std.string(db.listsRange("key2", 0, -1)));
   }
 }
