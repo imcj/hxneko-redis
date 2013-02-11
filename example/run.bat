@@ -1,4 +1,4 @@
 @echo off
 cd bin
-neko hxnekoredis.n
+neko redis_example.n
 pause

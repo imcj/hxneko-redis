@@ -1,4 +1,4 @@
 -cp . 
 -cp ../../src 
--neko ../bin/hxnekoredis.n 
+-neko ../bin/redis_example.n 
 -main Main
