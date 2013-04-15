@@ -670,12 +670,18 @@ class Redis
 		return protocol.receiveMultiBulk();
 	}
 
-	public function zrangebyscore(key :String, min :String, max :String, ?offset :Int, ?count :Int) :Array<String>
+	public function zrangebyscore(key :String, min :String, max :String, ?withScores :Bool = false, ?offset :Int, ?count :Int) :Array<String>
 	{
-        if( count != null )
-            protocol.sendMultiBulkCommand("ZRANGEBYSCORE", [key, min, max, "LIMIT", Std.string(offset), Std.string(count)]);
-        else
-            protocol.sendMultiBulkCommand("ZRANGEBYSCORE", [key, min, max]);
+        var params = [key, min, max];
+        if( withScores )
+            params.push("WITHSCORES");
+        if( offset != null )
+        {
+            params.push("LIMIT");
+            params.push(Std.string(offset));
+            params.push(Std.string(count));
+        }
+        protocol.sendMultiBulkCommand("ZRANGEBYSCORE", params);
 		return protocol.receiveMultiBulk();
 	}
 

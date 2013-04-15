@@ -17,12 +17,203 @@ example
     
     static function main()
     {
-    	var db = new Redis("localhost");        // instantiate an object
+        var db = new Redis("localhost");        // instantiate an object
     
-    	db.set("key1", "value1");               // set some keys
-    	db.set("key2", "value2");
+        db.set("key1", "value1");               // set some keys
+        db.set("key2", "value2");
     
-    	trace(db.get("key2"));                  // outputs: "value2"
-    	trace(db.get("key1"));                  // outputs: "value1"
+        trace(db.get("key2"));                  // outputs: "value2"
+        trace(db.get("key1"));                  // outputs: "value1"
     }
 
+
+commands
+--------
+
+===Keys===
+{{{
+    public function del(keys :Array<String>) :Int
+    public function dump(keys :Array<String>) :Void
+    public function exists(key :String) :Bool
+    public function expire(key :String, seconds :Int) :Bool
+    public function expireat(key :String, timestamp :String) :Bool
+    public function keys(pattern :String) :Array<String>
+  * public function migrate(host, port, key, destinationdb, timeout) :Void
+    public function move(key :String, db :Int) :Bool
+  * public function object() :Void
+  * public function persist(key :String) :Void
+  * public function pexpire(key :String, milliseconds :Int) :Void
+  * public function pexpireat(key :String, timestamp :String) :Void
+  * public function pttl(key :String) :Void
+    public function randomkey() :String
+    public function rename(key :String, newkey :String) :Bool
+    public function renamenx(key :String, newkey :String) :Bool
+  * public function restore() :Void
+    public function ttl(key :String) :Int
+    public function type(key :String) :String
+}}}
+
+===Strings===
+{{{
+    public function append(key :String, value :String) :Bool
+  * public function bitcount(key :String, ?start :Int, ?end :Int)
+  * public function bitop(operation, destkey, keys)
+    public function decr(key :String) :Int
+    public function decrby(key :String, decrement :Int) :Int
+    public function get(key :String) :String
+  * public function getbit(key :String) :Void
+    public function getrange(key :String, start :Int, end :Int) :String
+    public function incr(key :String) :Int
+    public function incrby(key :String, increment :Int) :Int
+    public function incrbyfloat(key :String, increment :Float) :Float
+    public function mget(keys :Array<String>) :Array<String>
+    public function mset(keysvals :Hash<String>) :Bool
+    public function msetnx(keysvals :Hash<String>) :Bool
+    public function psetex(key :String, milliseconds :Int, value :String) :Bool
+    public function set(key :String, value :String) :Bool
+  * public function setbit(key :String, offset :Int, value :Bool)
+    public function setex(key :String, seconds :Int, value :String)
+    public function setnx(key :String, value :String) :Bool
+    public function setrange(key :String, offset :Int, value :String) :Int
+    public function strlen(key :String) :Int
+}}}
+
+===Hashes===
+{{{
+    public function hdel(key :String, field :String) :Bool
+    public function hexists(key :String, field :String) :Bool
+    public function hget(key :String, field :String) :String
+    public function hgetall(key :String) :Hash<String>
+    public function hincrby(key :String, field :String, increment :Int) :Int
+    public function hincrbyfloat(key :String, field :String, increment :Float) :Float
+    public function hkeys(key :String) :Array<String>
+    public function hlen(key :String) :Int
+    public function hmget(key :String, fields :Array<String>) :Array<String>
+    public function hmset(key :String, fields :Hash<String>) :Bool
+    public function hset(key :String, field :String, value :String) :Bool
+    public function hsetnx(key :String, field :String, value :String) :Bool
+    public function hvals(key :String) :Array<String>
+}}}
+
+===Lists===
+{{{
+    public function blpop(key :String, seconds :Int) :String
+    public function brpop(key :String, seconds :Int) :String
+    public function brpoppush(key :String, destination :String, seconds :Int) :String
+    public function lindex(key :String, index :Int) :String
+    public function llen(key :String) :Int
+    public function lpop(key :String) :String
+    public function lpush(key :String, value :String) :Int
+    public function lpushx(key :String, value :String) :Int
+    public function lrange(key :String, start :Int, end :Int) :Array<String>
+    public function lrem(key :String, count :Int, value :String) :Int
+    public function lset(key :String, index :Int, value :String) :Bool
+    public function ltrim(key :String, start :Int, end :Int) :Bool
+    public function rpop(key :String) :String
+    public function rpoplpush(source :String, destination :String) :String
+    public function rpush(key :String, value :String) :Int
+    public function rpushx(key :String, value :String) :Int
+    public function sadd(key :String, members :Array<String>) :Bool
+    public function scard(key :String) :Int
+    public function sdiff(keys :Array<String>) :Array<String>
+    public function sdiffstore(destination :String, keys :Array<String>) :Bool
+    public function sinter(keys :Array<String>) :Array<String>
+    public function sinterstore(destination :String, keys :Array<String>) :Bool
+    public function sismember(key :String, member :String) :Bool
+    public function smembers(key :String) :Array<String>
+    public function smove(source :String, destination :String, member :String) :Bool
+    public function spop(key :String) :String
+    public function srandmember(key :String) :String 
+    public function srem(key :String, member :String) :Bool
+    public function sunion(keys :Array<String>) :Array<String>
+    public function sunionstore(destination :String, keys :Array<String>) :Bool
+}}}
+
+===Sorted Sets===
+{{{
+    public function zadd(key :String, membersscores :Hash<Float>) :Bool
+    public function zcard(key :String) :Int
+    public function zcount(key :String, min :String, max :String) :Int
+    public function zincrby(key :String, increment :Float, member :String) :Float
+    public function zinterstore(destination :String, keys :Array<String>, ?weights :Array<Float>, ?aggregate :String) :Int
+    public function zrange(key :String, start :Int, end :Int, ?withScores :Bool = false) :Array<String>
+    public function zrangebyscore(key :String, min :String, max :String, ?offset :Int, ?count :Int) :Array<String>
+    public function zrank(key :String, member :String) :Int
+    public function zrem(key :String, member :String) :Bool
+    public function zremrangebyrank(key :String, start :Int, end :Int) :Int
+    public function zremrangebyscore(key :String, min :String, max :String) :Int
+    public function zrevrange(key :String, start :Int, end :Int, ?withScores :Bool = false) :Array<String>
+    public function zrevrangebyscore(key :String, max :String, min :String, ?withScores :Bool = false, ?offset :Int, ?count :Int) :Array<String>
+    public function zrevrank(key :String, member :String) :Int
+    public function zscore(key :String, member :String) :Float
+    public function zunionstore(destination :String, keys :Array<String>, ?weights :Array<Float>, ?aggregate :String) :Int
+}}}
+
+===Pub/Sub===
+{{{
+  * public function discard() :Void
+  * public function psubscribe() :Void
+  * public function publish() :Void
+  * public function punsubscribe() :Void
+  * public function subscribe() :Void
+  * public function unsubscribe() :Void
+}}}
+
+===Transactions===
+{{{
+  * public function exec() :Void
+  * public function multi() :Void
+  * public function unwatch() :Void
+  * public function watch() :Void
+}}}
+
+===Scripting===
+{{{
+  * public function eval() :Void
+  * public function evalsha() :Void
+  * public function scriptexists() :Void
+  * public function scriptflush() :Void
+  * public function scriptkill() :Void
+  * public function scriptload() :Void
+}}}
+
+===Sort===
+{{{
+    public function sort(key :String, ?byPattern :String, ?start :Int = 0, ?end :Int = 0, ?getPattern :String, ?isAscending :Bool = true, ?isAlpha :Bool = false, ?dstKey :String) :Dynamic
+}}}
+
+===Connection===
+{{{
+    public function auth(password :String) :Bool
+    public function ping() :Bool
+    public function quit() :Void
+    public function select(index :Int) :Bool
+}}}
+
+===Server===
+{{{
+    public function bgrewriteaof() :Bool
+    public function bgsave() :Bool
+  * public function clientkill() :Void
+  * public function clientlist() :Void
+  * public function clientgetname() :Void
+  * public function clientsetname() :Void
+  * public function configget() :Void
+  * public function configset() :Void
+  * public function configresetstat() :Void
+    public function dbsize() :Int
+  * public function debugobject() :Void
+  * public function debugsetfault() :Void
+  * public function echo() :Void
+    public function flushall() :Bool
+    public function flushdb() :Bool
+    public function info(?section) :String
+    public function lastsave() :Int
+  * public function monitor() :Void
+    public function save() :Bool
+    public function shutdown() :Void
+    public function slaveof(config :SlaveConfig) :Bool
+  * public function slowlog() :Void
+  * public function sync() :Void
+  * public function time() :Void
+}}}

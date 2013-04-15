@@ -41,7 +41,7 @@ class TestRedis extends haxe.unit.TestCase
     // connect and clear the db, use index 10 for tests
     override public function setup()
     {
-        db = new Redis("localhost");
+        db = new Redis("localhost", 32323);
         db.select(10);
         db.flushdb();
     }
