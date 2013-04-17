@@ -516,12 +516,12 @@ class Redis
 	
     // ------------------------ sets
 
-	public function sadd(key :String, members :Array<String>) :Bool
+	public function sadd(key :String, members :Array<String>) :Int
 	{
 		var params = members.copy();
 		params.unshift(key);
 		protocol.sendMultiBulkCommand("SADD", params);
-		return protocol.receiveInt() > 0;
+		return protocol.receiveInt();
 	}
 	
 	public function scard(key :String) :Int
@@ -588,12 +588,12 @@ class Redis
 		return protocol.receiveBulk();
 	}
 	
-	public function srem(key :String, members :Array<String>) :Bool
+	public function srem(key :String, members :Array<String>) :Int
 	{
 		var params = members.copy();
 		params.unshift(key);
 		protocol.sendMultiBulkCommand("SREM", params);
-		return protocol.receiveInt() > 0;
+		return protocol.receiveInt();
 	}
 	
 	public function sunion(keys :Array<String>) :Array<String>
@@ -613,7 +613,7 @@ class Redis
     // ------------------------ sorted sets
 
     // membersscores is member -> score
-	public function zadd(key :String, membersscores :Hash<Float>) :Bool
+	public function zadd(key :String, membersscores :Hash<Float>) :Int
 	{
         var params = [key];
         for( key in membersscores.keys() )
@@ -622,7 +622,7 @@ class Redis
             params.push(key);
         }
 		protocol.sendMultiBulkCommand("ZADD", params);
-		return protocol.receiveInt() > 0;
+		return protocol.receiveInt();
 	}
 	
 	public function zcard(key :String) :Int
@@ -693,10 +693,10 @@ class Redis
 		return protocol.receiveInt();
 	}
 
-	public function zrem(key :String, member :String) :Bool
+	public function zrem(key :String, member :String) :Int
 	{
 		protocol.sendMultiBulkCommand("ZREM", [key, member]);
-		return protocol.receiveInt() > 0;
+		return protocol.receiveInt();
 	}
 	
 	public function zremrangebyrank(key :String, start :Int, end :Int) :Int
