@@ -588,9 +588,11 @@ class Redis
 		return protocol.receiveBulk();
 	}
 	
-	public function srem(key :String, member :String) :Bool
+	public function srem(key :String, members :Array<String>) :Bool
 	{
-		protocol.sendMultiBulkCommand("SREM", [key, member]);
+		var params = members.copy();
+		params.unshift(key);
+		protocol.sendMultiBulkCommand("SREM", params);
 		return protocol.receiveInt() > 0;
 	}
 	
@@ -729,7 +731,7 @@ class Redis
             params.push(Std.string(offset));
             params.push(Std.string(count));
         }
-        protocol.sendMultiBulkCommand("ZREVRANGE", params);
+        protocol.sendMultiBulkCommand("ZREVRANGEBYSCORE", params);
 		return protocol.receiveMultiBulk();
 	}
 	

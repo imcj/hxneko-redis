@@ -454,7 +454,7 @@ class TestRedis extends haxe.unit.TestCase
         assertTrue(db.sadd("key1", ["val2"]));
         assertTrue(db.sadd("key1", ["val3"]));
         assertEquals(3, db.scard("key1"));
-        assertTrue(db.srem("key1", "val2"));
+        assertTrue(db.srem("key1", ["val2"]));
         assertEquals(2, db.scard("key1"));
         assertEquals("[val1,val3]", Std.string(sorted(db.smembers("key1"))));
     }
