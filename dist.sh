@@ -7,7 +7,7 @@ if [ -e dist ]; then
 fi
 
 mkdir dist
-cp haxelib.xml LICENSE README src/test.n dist
+cp haxelib.json LICENSE README src/test.n dist
 
 mkdir dist/redis
 cp src/redis/* dist/redis

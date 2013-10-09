@@ -29,9 +29,8 @@
 
 package redis;
 
-import haxe.Int32;
-import neko.net.Host;
-import neko.net.Socket;
+import sys.net.Host;
+import sys.net.Socket;
 using StringTools;
 
 enum SlaveConfig
@@ -257,8 +256,8 @@ class Redis
 		return protocol.receiveMultiBulk();
 	}
 	
-    // pass keys and values in a hash
-	public function mset(keysvals :Hash<String>) :Bool
+    // pass keys and values in a map
+	public function mset(keysvals :Map<String,String>) :Bool
 	{
 		var params = new Array<String>();
 		for( kk in keysvals.keys() )
@@ -270,7 +269,7 @@ class Redis
 		return protocol.receiveSingleLine() == OK;
 	}
 	
-	public function msetnx(keysvals :Hash<String>) :Bool
+	public function msetnx(keysvals :Map<String,String>) :Bool
 	{
 		var params = new Array<String>();
 		for( kk in keysvals.keys() )
@@ -343,11 +342,11 @@ class Redis
 		return protocol.receiveBulk();
 	}
 
-	public function hgetall(key :String) :Hash<String>
+	public function hgetall(key :String) :Map<String,String>
 	{
 		protocol.sendMultiBulkCommand("HGETALL", [key]);
 		var all = protocol.receiveMultiBulk();
-		var ret = new Hash<String>();
+		var ret = new Map<String,String>();
 		while( all.length > 0 )
             ret.set(all.shift(), all.shift());
 		return ret;
@@ -385,7 +384,7 @@ class Redis
 		return protocol.receiveMultiBulk();
 	}
 
-	public function hmset(key :String, fields :Hash<String>) :Bool
+	public function hmset(key :String, fields :Map<String,String>) :Bool
 	{
 		var params = new Array<String>();
 		params.push(key);
@@ -613,7 +612,7 @@ class Redis
     // ------------------------ sorted sets
 
     // membersscores is member -> score
-	public function zadd(key :String, membersscores :Hash<Float>) :Int
+	public function zadd(key :String, membersscores :Map<String,Float>) :Int
 	{
         var params = [key];
         for( key in membersscores.keys() )

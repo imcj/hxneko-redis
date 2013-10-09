@@ -28,8 +28,8 @@
 
 package redis;
 
-import neko.net.Socket;
-import neko.net.Host;
+import sys.net.Socket;
+import sys.net.Host;
 // TODO expire, expireat, ttl, sort
 // skipped select, move, flushdb, flushall, save, auth, backgroundsave, lastsave, shutdown, info, slaveof
 
@@ -203,7 +203,7 @@ class TestRedis extends haxe.unit.TestCase
 
     public function testMultiSet()
     {
-        var fields = new Hash<String>();
+        var fields = new Map<String,String>();
         fields.set("key1", "val1");
         fields.set("key2", "val2");
         fields.set("key3", "val3");
@@ -216,7 +216,7 @@ class TestRedis extends haxe.unit.TestCase
     public function testMultiSetSafely()
     {
         assertTrue(db.set("key2", "value"));
-        var fields = new Hash<String>();
+        var fields = new Map<String,String>();
         fields.set("key1", "val1");
         fields.set("key2", "val2");
         fields.set("key3", "val3");
@@ -272,7 +272,7 @@ class TestRedis extends haxe.unit.TestCase
 
     public function testHashMultiSetGet()
     {
-        var fields = new Hash<String>();
+        var fields = new Map<String,String>();
         fields.set("field1", "val1");
         fields.set("field2", "val2");
         assertTrue(db.hmset("key1", fields));
@@ -319,7 +319,7 @@ class TestRedis extends haxe.unit.TestCase
 
     public function testHashKeys()
     {
-        var fields = new Hash<String>();
+        var fields = new Map<String,String>();
         fields.set("field1", "val1");
         fields.set("field2", "val2");
         fields.set("field3", "val3");
@@ -329,7 +329,7 @@ class TestRedis extends haxe.unit.TestCase
 
     public function testHashValues()
     {
-        var fields = new Hash<String>();
+        var fields = new Map<String,String>();
         fields.set("field1", "val1");
         fields.set("field2", "val2");
         fields.set("field3", "val3");
@@ -339,12 +339,18 @@ class TestRedis extends haxe.unit.TestCase
 
     public function testHashGetAll()
     {
-        var fields = new Hash<String>();
+        var fields = new Map<String,String>();
         fields.set("field1", "val1");
         fields.set("field2", "val2");
         fields.set("field3", "val3");
         assertTrue(db.hmset("key1", fields));
-        assertEquals("{field2 => val2, field1 => val1, field3 => val3}", Std.string(db.hgetall("key1")));
+        var ret = db.hgetall("key1");
+        assertTrue(ret.exists("field1"));
+        assertEquals("val1", ret.get("field1"));
+        assertTrue(ret.exists("field2"));
+        assertEquals("val2", ret.get("field2"));
+        assertTrue(ret.exists("field3"));
+        assertEquals("val3", ret.get("field3"));
     }
 
     // ------------------------ lists
@@ -540,7 +546,7 @@ class TestRedis extends haxe.unit.TestCase
 
     public function testSortedSetsAddCard()
     {
-        var members = new Hash<Float>();
+        var members = new Map<String,Float>();
         members.set("val2", 2);
         members.set("val1", 1);
         members.set("val3", 3);
@@ -551,7 +557,7 @@ class TestRedis extends haxe.unit.TestCase
 
     public function testSortedSetsAddCount()
     {
-        var members = new Hash<Float>();
+        var members = new Map<String,Float>();
         members.set("val2", 2);
         members.set("val1", 1);
         members.set("val3", 3);
@@ -561,7 +567,7 @@ class TestRedis extends haxe.unit.TestCase
 
     public function testSortedSetsRemove()
     {
-        var members = new Hash<Float>();
+        var members = new Map<String,Float>();
         members.set("val2", 2);
         members.set("val1", 1);
         members.set("val3", 3);
@@ -573,7 +579,7 @@ class TestRedis extends haxe.unit.TestCase
 
     public function testSortedSetsIncrementBy()
     {
-        var members = new Hash<Float>();
+        var members = new Map<String,Float>();
         members.set("val2", 2);
         members.set("val1", 1);
         members.set("val3", 3);
@@ -584,7 +590,7 @@ class TestRedis extends haxe.unit.TestCase
 
     public function testSortedSetsRank()
     {
-        var members = new Hash<Float>();
+        var members = new Map<String,Float>();
         members.set("val2", 1.2);
         members.set("val1", 1.1);
         members.set("val3", 1.3);
@@ -596,7 +602,7 @@ class TestRedis extends haxe.unit.TestCase
 
     public function testSortedSetsRevRank()
     {
-        var members = new Hash<Float>();
+        var members = new Map<String,Float>();
         members.set("val2", 1.2);
         members.set("val1", 1.1);
         members.set("val3", 1.3);
@@ -608,7 +614,7 @@ class TestRedis extends haxe.unit.TestCase
 
     public function testSortedSetsReverseRange()
     {
-        var members = new Hash<Float>();
+        var members = new Map<String,Float>();
         members.set("val2", 2);
         members.set("val1", 1);
         members.set("val3", 3);
@@ -618,7 +624,7 @@ class TestRedis extends haxe.unit.TestCase
 
     public function testSortedSetsRangeByScore()
     {
-        var members = new Hash<Float>();
+        var members = new Map<String,Float>();
         members.set("val2", 2.1);
         members.set("val1", 1.2);
         members.set("val3", 3.3);
@@ -628,7 +634,7 @@ class TestRedis extends haxe.unit.TestCase
 
     public function testSortedSetsScore()
     {
-        var members = new Hash<Float>();
+        var members = new Map<String,Float>();
         members.set("val2", 2.1);
         members.set("val1", 1.1);
         members.set("val3", 3.1);
@@ -640,7 +646,7 @@ class TestRedis extends haxe.unit.TestCase
 
     public function testSortedSetsRemoveRangeByRank()
     {
-        var members = new Hash<Float>();
+        var members = new Map<String,Float>();
         members.set("val2", 2.1);
         members.set("val1", 1.1);
         members.set("val5", 3.2);
@@ -653,7 +659,7 @@ class TestRedis extends haxe.unit.TestCase
 
     public function testSortedSetsRemoveByScore()
     {
-        var members = new Hash<Float>();
+        var members = new Map<String,Float>();
         members.set("val2", 2);
         members.set("val1", 1);
         members.set("val3", 3);
@@ -664,12 +670,12 @@ class TestRedis extends haxe.unit.TestCase
 
     public function testSortedSetsUnionStore()
     {
-        var members = new Hash<Float>();
+        var members = new Map<String,Float>();
         members.set("val2a", 2);
         members.set("val1a", 1);
         members.set("val3a", 3);
         assertEquals(3, db.zadd("key1", members));
-        members = new Hash<Float>();
+        members = new Map<String,Float>();
         members.set("val2b", 5);
         members.set("val1b", 4);
         members.set("val3b", 6);
@@ -680,12 +686,12 @@ class TestRedis extends haxe.unit.TestCase
 
     public function testSortedSetsUnionStoreAggMax()
     {
-        var members = new Hash<Float>();
+        var members = new Map<String,Float>();
         members.set("val2", 2);
         members.set("val1", 1);
         members.set("val3", 3);
         assertEquals(3, db.zadd("key1", members));
-        members = new Hash<Float>();
+        members = new Map<String,Float>();
         members.set("val2", 5);
         members.set("val1", 4);
         members.set("val3", 6);
@@ -696,12 +702,12 @@ class TestRedis extends haxe.unit.TestCase
 
     public function testSortedSetsIntersectStore()
     {
-        var members = new Hash<Float>();
+        var members = new Map<String,Float>();
         members.set("val2", 2);
         members.set("val1", 1);
         members.set("val3", 3);
         assertEquals(3, db.zadd("key1", members));
-        members = new Hash<Float>();
+        members = new Map<String,Float>();
         members.set("val3", 5);
         members.set("val2", 4);
         members.set("val4", 6);

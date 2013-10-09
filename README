@@ -67,8 +67,8 @@ commands
     public function incrby(key :String, increment :Int) :Int
     public function incrbyfloat(key :String, increment :Float) :Float
     public function mget(keys :Array<String>) :Array<String>
-    public function mset(keysvals :Hash<String>) :Bool
-    public function msetnx(keysvals :Hash<String>) :Bool
+    public function mset(keysvals :Map<String,String>) :Bool
+    public function msetnx(keysvals :Map<String,String>) :Bool
     public function psetex(key :String, milliseconds :Int, value :String) :Bool
     public function set(key :String, value :String) :Bool
   * public function setbit(key :String, offset :Int, value :Bool)
@@ -83,13 +83,13 @@ commands
     public function hdel(key :String, field :String) :Bool
     public function hexists(key :String, field :String) :Bool
     public function hget(key :String, field :String) :String
-    public function hgetall(key :String) :Hash<String>
+    public function hgetall(key :String) :Map<String,String>
     public function hincrby(key :String, field :String, increment :Int) :Int
     public function hincrbyfloat(key :String, field :String, increment :Float) :Float
     public function hkeys(key :String) :Array<String>
     public function hlen(key :String) :Int
     public function hmget(key :String, fields :Array<String>) :Array<String>
-    public function hmset(key :String, fields :Hash<String>) :Bool
+    public function hmset(key :String, fields :Map<String,String>) :Bool
     public function hset(key :String, field :String, value :String) :Bool
     public function hsetnx(key :String, field :String, value :String) :Bool
     public function hvals(key :String) :Array<String>
@@ -131,7 +131,7 @@ commands
 
 ===Sorted Sets===
 {{{
-    public function zadd(key :String, membersscores :Hash<Float>) :Bool
+    public function zadd(key :String, membersscores :Map<String,Float>) :Bool
     public function zcard(key :String) :Int
     public function zcount(key :String, min :String, max :String) :Int
     public function zincrby(key :String, increment :Float, member :String) :Float
