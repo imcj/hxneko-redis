@@ -420,13 +420,13 @@ class Redis
 	public function blpop(key :String, seconds :Int) :String
 	{
 		protocol.sendMultiBulkCommand("BLPOP", [key, Std.string(seconds)]);
-		return protocol.receiveBulk();
+		return protocol.receiveMultiBulk();
 	}
 	
 	public function brpop(key :String, seconds :Int) :String
 	{
 		protocol.sendMultiBulkCommand("BRPOP", [key, Std.string(seconds)]);
-		return protocol.receiveBulk();
+		return protocol.receiveMultiBulk();
 	}
 	
 	public function brpoppush(key :String, destination :String, seconds :Int) :String
